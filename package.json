@@ -27,6 +27,7 @@
     "better-sqlite3": "^12.10.0",
     "drizzle-orm": "^0.45.2",
     "flatpickr": "^4.6.13",
+    "lightweight-charts": "^5.2.0",
     "next": "^16.2.6",
     "react": "^19.2.6",
     "react-apexcharts": "^1.8.0",
