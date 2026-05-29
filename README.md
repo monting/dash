@@ -74,6 +74,36 @@ git clone https://github.com/TailAdmin/free-nextjs-admin-dashboard.git
    yarn dev
    ```
 
+## Database (Drizzle + SQLite)
+
+### Files
+
+- `src/db/schema.ts` — Drizzle table definitions for `prices` (composite PK on `symbol+date`) and `meta`
+- `src/db/index.ts` — singleton db client; reuses the connection across hot reloads in dev, sets WAL mode for concurrent reads
+- `drizzle.config.ts` — points drizzle-kit at the schema and `data/wiki.db`
+- `drizzle/0000_solid_husk.sql` — generated migration (already applied)
+
+### Usage
+
+```ts
+import { db } from "@/db";
+import { prices, meta } from "@/db/schema";
+
+// query
+const rows = await db.select().from(prices).where(eq(prices.symbol, "AAPL"));
+
+// insert
+await db.insert(meta).values({ wikiTicker: "Apple_Inc.", symbol: "AAPL", status: "ok" });
+```
+
+### Scripts
+
+```bash
+npm run db:generate  # after schema changes
+npm run db:migrate   # apply migrations
+npm run db:studio    # Drizzle Studio UI
+```
+
 ## Components
 
 TailAdmin is a pre-designed starting point for building a web-based dashboard using Next.js and Tailwind CSS. The template includes:
