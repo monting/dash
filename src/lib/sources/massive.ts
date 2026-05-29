@@ -88,7 +88,7 @@ export class MassiveSource implements PriceSource {
       high: r.h,
       low: r.l,
       close: r.c,
-      volume: r.v ?? 0,
+      volume: Math.round(r.v ?? 0),
     }));
   }
 
@@ -100,7 +100,7 @@ export class MassiveSource implements PriceSource {
       high: r.h,
       low: r.l,
       close: r.c,
-      volume: r.v ?? 0,
+      volume: Math.round(r.v ?? 0),
     }));
   }
 
