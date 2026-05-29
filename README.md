@@ -51,10 +51,10 @@ npm run db:studio    # Open Drizzle Studio UI for database inspection
 
 ### Files
 
-- `src/db/schema.ts` — Drizzle table definitions for `prices` (composite PK on `symbol+date`) and `meta`
+- `src/db/schema.ts` — Drizzle tables: `prices` (raw daily OHLCV, PK `symbol+date`), `prices_hourly` (rolling 7-day intraday, PK `symbol+ts`), `splits`, `dividends`, and `meta` (one row per wiki-ticker)
 - `src/db/index.ts` — singleton db client; reuses the connection across hot reloads in dev, sets WAL mode for concurrent reads
 - `drizzle.config.ts` — points drizzle-kit at the schema and `data/wiki.db`
-- `drizzle/0000_solid_husk.sql` — generated migration (already applied)
+- `drizzle/0000_mighty_wilson_fisk.sql` — generated migration (already applied)
 
 ### Usage
 
@@ -76,6 +76,28 @@ npm run db:generate  # after schema changes
 npm run db:migrate   # apply migrations
 npm run db:studio    # Drizzle Studio UI
 ```
+
+## Price data retrieval
+
+Standalone CLIs pull **raw** price history from market-data providers (Massive) into
+SQLite; the dashboard only ever reads SQLite. Design rationale lives in `docs/adr/`, the
+domain glossary in `CONTEXT.md`.
+
+The watchlist is derived (read-only) from the LLM wiki at `../stock_wiki` — the ticker
+notes under `markets/equities/*.md`. Set `WIKI_PATH` to override. Copy `.env.example` to
+`.env.local` and add your `MASSIVE_API_KEY`.
+
+```bash
+npm run sync                       # sync watchlist from the wiki into `meta`
+npm run update                     # fetch prices for resolved symbols (syncs first)
+npm run update -- --force          # refetch everything, ignore the freshness window
+npm run update -- --symbol=NVDA    # one symbol
+```
+
+A wiki note resolves to a market symbol via its `symbol:` frontmatter, falling back to the
+filename for clean US tickers; foreign/numeric/unidentified notes stay `unresolved` until
+you add a `symbol:` (e.g. a US ADR). Scripts run under Node via `tsx` — not Bun — because
+`better-sqlite3` is a Node native addon.
 
 ## Features
 

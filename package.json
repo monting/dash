@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "sync": "tsx scripts/sync.ts",
+    "update": "tsx scripts/update.ts"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.19",
