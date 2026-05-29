@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { meta } from "../db/schema";
+import { watchlist } from "../db/schema";
 import { readWatchlist } from "./wiki";
 
 export interface SyncStats {
@@ -12,7 +12,7 @@ export interface SyncStats {
   skipped: string[]; // wiki-tickers with no resolvable symbol
 }
 
-// Upserts the wiki watchlist into `meta` without clobbering fetch state
+// Upserts the wiki watchlist into `watchlist` without clobbering fetch state
 // (lastFetched markers, ok/error status). See ADR-0002 / ADR-0003.
 export function syncWatchlist(): SyncStats {
   const entries = readWatchlist();
@@ -25,9 +25,9 @@ export function syncWatchlist(): SyncStats {
     if (e.symbol) resolved++;
     else unresolved++;
 
-    const existing = db.select().from(meta).where(eq(meta.wikiTicker, e.wikiTicker)).get();
+    const existing = db.select().from(watchlist).where(eq(watchlist.wikiTicker, e.wikiTicker)).get();
     if (!existing) {
-      db.insert(meta)
+      db.insert(watchlist)
         .values({
           wikiTicker: e.wikiTicker,
           symbol: e.symbol,
@@ -43,13 +43,13 @@ export function syncWatchlist(): SyncStats {
           ? existing.status
           : "pending"
         : "unresolved";
-      db.update(meta)
+      db.update(watchlist)
         .set({
           symbol: e.symbol,
           status,
           source: e.symbol ? (existing.source ?? "massive") : existing.source,
         })
-        .where(eq(meta.wikiTicker, e.wikiTicker))
+        .where(eq(watchlist.wikiTicker, e.wikiTicker))
         .run();
       updated++;
     }

@@ -51,22 +51,22 @@ npm run db:studio    # Open Drizzle Studio UI for database inspection
 
 ### Files
 
-- `src/db/schema.ts` — Drizzle tables: `prices` (raw daily OHLCV, PK `symbol+date`), `prices_hourly` (rolling 7-day intraday, PK `symbol+ts`), `splits`, `dividends`, and `meta` (one row per wiki-ticker)
+- `src/db/schema.ts` — Drizzle tables: `prices` (raw daily OHLCV, PK `symbol+date`), `prices_hourly` (rolling 7-day intraday, PK `symbol+ts`), `splits`, `dividends`, and `watchlist` (one row per wiki-ticker)
 - `src/db/index.ts` — singleton db client; reuses the connection across hot reloads in dev, sets WAL mode for concurrent reads
 - `drizzle.config.ts` — points drizzle-kit at the schema and `data/wiki.db`
-- `drizzle/0000_mighty_wilson_fisk.sql` — generated migration (already applied)
+- `drizzle/0000_sudden_night_nurse.sql` — generated migration (already applied)
 
 ### Usage
 
 ```ts
 import { db } from "@/db";
-import { prices, meta } from "@/db/schema";
+import { prices, watchlist } from "@/db/schema";
 
 // query
 const rows = await db.select().from(prices).where(eq(prices.symbol, "AAPL"));
 
 // insert
-await db.insert(meta).values({ wikiTicker: "Apple_Inc.", symbol: "AAPL", status: "ok" });
+await db.insert(watchlist).values({ wikiTicker: "Apple_Inc.", symbol: "AAPL", status: "ok" });
 ```
 
 ### Scripts
@@ -88,7 +88,7 @@ notes under `markets/equities/*.md`. Set `WIKI_PATH` to override. Copy `.env.exa
 `.env.local` and add your `MASSIVE_API_KEY`.
 
 ```bash
-npm run sync                       # sync watchlist from the wiki into `meta`
+npm run sync                       # sync watchlist from the wiki into `watchlist`
 npm run update                     # fetch prices for resolved symbols (syncs first)
 npm run update -- --force          # refetch everything, ignore the freshness window
 npm run update -- --symbol=NVDA    # one symbol

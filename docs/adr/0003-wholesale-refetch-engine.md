@@ -3,7 +3,7 @@
 Each run refetches a symbol's entire daily window and its 7-day hourly window and upserts
 them, rather than tracking and appending only new bars, or maintaining an explicit
 job/queue table. Progress and resumability come from the data itself: the rows already in
-SQLite plus per-symbol `*_last_fetched` markers in `meta` are the ledger — a run skips
+SQLite plus per-symbol `*_last_fetched` markers in `watchlist` are the ledger — a run skips
 symbols refreshed within the freshness window, and an interrupted sweep just resumes on
 the next run.
 

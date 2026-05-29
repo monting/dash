@@ -1,4 +1,4 @@
-// Sync the watchlist from the LLM-wiki into `meta`. Read-only on the wiki.
+// Sync the watchlist from the LLM-wiki into `watchlist`. Read-only on the wiki.
 // Run: bun run sync
 import "../src/lib/env";
 import { syncWatchlist } from "../src/lib/sync";

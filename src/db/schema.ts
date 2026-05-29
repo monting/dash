@@ -59,7 +59,7 @@ export const dividends = sqliteTable(
 
 // One row per wiki-ticker. Derived from the LLM-wiki (ADR-0002) and doubling as
 // the fetch-progress ledger (ADR-0003).
-export const meta = sqliteTable("meta", {
+export const watchlist = sqliteTable("watchlist", {
   wikiTicker: text("wiki_ticker").primaryKey(),
   symbol: text("symbol"), // resolved market symbol; null when unresolved
   status: text("status").notNull().default("unresolved"), // unresolved | ok | error

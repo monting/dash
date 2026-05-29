@@ -6,7 +6,7 @@
 import "../src/lib/env";
 import { eq } from "drizzle-orm";
 import { db } from "../src/db";
-import { meta } from "../src/db/schema";
+import { watchlist } from "../src/db/schema";
 import { updateSymbol } from "../src/lib/fetcher";
 import { RateLimiter } from "../src/lib/ratelimit";
 import { getSource } from "../src/lib/sources";
@@ -25,7 +25,7 @@ async function main() {
     console.log(`sync: ${s.resolved} resolved, ${s.unresolved} unresolved`);
   }
 
-  let rows = db.select().from(meta).all().filter((r) => !!r.symbol);
+  let rows = db.select().from(watchlist).all().filter((r) => !!r.symbol);
   if (only) rows = rows.filter((r) => r.wikiTicker === only || r.symbol === only);
 
   if (rows.length === 0) {
@@ -58,9 +58,9 @@ async function main() {
       console.log(`✓ ${r.wikiTicker} (${r.symbol}) — daily ${c.daily}, hourly ${c.hourly}, splits ${c.splits}, div ${c.dividends}`);
       ok++;
     } catch (e: any) {
-      db.update(meta)
+      db.update(watchlist)
         .set({ status: "error", lastError: String(e?.message ?? e).slice(0, 500) })
-        .where(eq(meta.wikiTicker, r.wikiTicker))
+        .where(eq(watchlist.wikiTicker, r.wikiTicker))
         .run();
       console.error(`✗ ${r.wikiTicker} (${r.symbol}) — ${e?.message ?? e}`);
       errored++;

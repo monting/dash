@@ -1,6 +1,6 @@
 import { and, eq, lt, sql } from "drizzle-orm";
 import { db } from "../db";
-import { dividends, meta, prices, pricesHourly, splits } from "../db/schema";
+import { dividends, watchlist, prices, pricesHourly, splits } from "../db/schema";
 import type { RateLimiter } from "./ratelimit";
 import type { PriceSource } from "./sources/types";
 
@@ -68,7 +68,7 @@ export async function updateSymbol(
       })
       .run();
   }
-  db.update(meta).set({ dailyLastFetched: now.toISOString() }).where(eq(meta.wikiTicker, wikiTicker)).run();
+  db.update(watchlist).set({ dailyLastFetched: now.toISOString() }).where(eq(watchlist.wikiTicker, wikiTicker)).run();
 
   // Hourly — rolling 7-day window, then prune anything older.
   await limiter.take();
@@ -103,7 +103,7 @@ export async function updateSymbol(
   db.delete(pricesHourly)
     .where(and(eq(pricesHourly.symbol, symbol), lt(pricesHourly.ts, daysAgo(HOURLY_DAYS).getTime())))
     .run();
-  db.update(meta).set({ hourlyLastFetched: now.toISOString() }).where(eq(meta.wikiTicker, wikiTicker)).run();
+  db.update(watchlist).set({ hourlyLastFetched: now.toISOString() }).where(eq(watchlist.wikiTicker, wikiTicker)).run();
 
   // Corporate actions — raw, for read-time adjustment (ADR-0001).
   await limiter.take();
@@ -130,6 +130,6 @@ export async function updateSymbol(
       .run();
   }
 
-  db.update(meta).set({ status: "ok", lastError: null }).where(eq(meta.wikiTicker, wikiTicker)).run();
+  db.update(watchlist).set({ status: "ok", lastError: null }).where(eq(watchlist.wikiTicker, wikiTicker)).run();
   return { daily: daily.length, hourly: hourly.length, splits: sp.length, dividends: dv.length };
 }

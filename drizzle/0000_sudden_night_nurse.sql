@@ -6,16 +6,6 @@ CREATE TABLE `dividends` (
 	PRIMARY KEY(`symbol`, `ex_date`)
 );
 --> statement-breakpoint
-CREATE TABLE `meta` (
-	`wiki_ticker` text PRIMARY KEY NOT NULL,
-	`symbol` text,
-	`status` text DEFAULT 'unresolved' NOT NULL,
-	`source` text,
-	`daily_last_fetched` text,
-	`hourly_last_fetched` text,
-	`last_error` text
-);
---> statement-breakpoint
 CREATE TABLE `prices` (
 	`symbol` text NOT NULL,
 	`date` text NOT NULL,
@@ -47,4 +37,14 @@ CREATE TABLE `splits` (
 	`denominator` real NOT NULL,
 	`source` text NOT NULL,
 	PRIMARY KEY(`symbol`, `ex_date`)
+);
+--> statement-breakpoint
+CREATE TABLE `watchlist` (
+	`wiki_ticker` text PRIMARY KEY NOT NULL,
+	`symbol` text,
+	`status` text DEFAULT 'unresolved' NOT NULL,
+	`source` text,
+	`daily_last_fetched` text,
+	`hourly_last_fetched` text,
+	`last_error` text
 );
