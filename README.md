@@ -88,7 +88,7 @@ notes under `markets/equities/*.md`. Set `WIKI_PATH` to override. Copy `.env.exa
 `.env.local` and add your `MASSIVE_API_KEY`.
 
 ```bash
-npm run sync                       # sync watchlist from the wiki into `watchlist`
+npm run sync                       # refresh the watchlist registry from the wiki (no API)
 npm run update                     # fetch prices for resolved symbols (syncs first)
 npm run update -- --force          # refetch everything, ignore the freshness window
 npm run update -- --symbol=NVDA    # one symbol
@@ -98,6 +98,21 @@ A wiki note resolves to a market symbol via its `symbol:` frontmatter, falling b
 filename for clean US tickers; foreign/numeric/unidentified notes stay `unresolved` until
 you add a `symbol:` (e.g. a US ADR). Scripts run under Node via `tsx` — not Bun — because
 `better-sqlite3` is a Node native addon.
+
+### `sync` vs `update`
+
+`update` *contains* `sync` — its first step (unless `--no-sync`) re-runs the watchlist
+sync, so the registry is always current before fetching.
+
+| | `sync` | `update` |
+|---|---|---|
+| Job | wiki → `watchlist` registry | fetch price data |
+| Calls the API | no (keyless, instant) | yes (Massive, rate-limited) |
+| Writes | `watchlist` only | `prices`, `prices_hourly`, `splits`, `dividends` (+ `watchlist` markers/status) |
+| Flags | — | `--force`, `--symbol=X`, `--no-sync` |
+
+Run `sync` alone for a quick, keyless preview of what resolves after editing the wiki;
+run `update` to actually pull data (it syncs first).
 
 ## Features
 
